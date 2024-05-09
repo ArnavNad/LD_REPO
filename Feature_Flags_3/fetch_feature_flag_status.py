@@ -1,6 +1,9 @@
+from flask import Flask, render_template
+import os
 import ldclient
-from ldclient.config import Config
 from ldclient import Context
+from ldclient.config import Config
+from threading import Lock, Event
 
 def fetch_feature_flag_status():
     # Set sdk_key to your LaunchDarkly SDK key.
@@ -12,14 +15,19 @@ def fetch_feature_flag_status():
     # Initialize LaunchDarkly client
     ldclient.set_config(Config(sdk_key))
 
+    if not ldclient.get().is_initialized():
+        print("*** SDK failed to initialize. Please check your internet connection and SDK credential for any typo.")
+        exit()
+
+    print("*** SDK successfully initialized")
+
     # Set up the evaluation context.
     context = Context.builder('Status_Flag').kind('user').name('Sandy').build()
 
-    # Get the status of the feature flag
     flag_value = ldclient.get().variation(feature_flag_key, context, False)
 
-    return flag_value
+    # Print the flag value
+    print("Feature flag 'Status_Flag' status:", flag_value)
 
 if __name__ == "__main__":
-    flag_status = fetch_feature_flag_status()
-    print("Feature flag 'Status_Flag' status:", flag_status)
+    fetch_feature_flag_status()
