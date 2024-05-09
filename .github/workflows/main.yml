@@ -20,7 +20,7 @@ jobs:
 
       - name: Install LaunchDarkly SDK
         run: |
-          pip install ldclient
+          pip install launchdarkly-server-sdk
 
       - name: Fetch feature flag status
         run: |
